@@ -59,7 +59,7 @@ class Locations extends Component {
     render() {
 
         const SortableItem = SortableElement(({ value, index, marker }) => <li className="locations-css" key={index}><span>{value}</span>
-            <button className="delete-css" onClick={this.deleteMarker.bind(this, marker)}>Delete</button></li>);
+            <button className="delete-css" onClick={this.deleteMarker.bind(this, marker)}>Удалить</button></li>);
 
         const SortableList = SortableContainer(({ locations }) => {
             return (
@@ -85,7 +85,7 @@ class Locations extends Component {
                 <SortableList locations={this.state.locations} onSortEnd={this.onSortEnd} />
 
                 {/* <SortableList items= {this.state.locations} /> */}
-                <button className="make-route-css" onClick={this.makeRoute}>Make route</button>
+                <button className="make-route-css" onClick={this.makeRoute}>Построить маршрут</button>
                 <span className={shouldMarkError() ? "shown_err" : "hidden"}>Недостаточно точек для построения маршрута</span>
             </div>
 
