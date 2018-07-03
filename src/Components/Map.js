@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
-import Locations from './Locations'
-
 
 export default class Map extends Component {
 
@@ -77,13 +75,20 @@ export default class Map extends Component {
             // ==================
 
 
+            
+
             this.props.locationsFromParent.forEach(element => { // iterate through locations saved in state 
+                var contentString = "Точка маршрута " + (this.props.locationsFromParent.indexOf(element)+1);
                 const marker = new google.maps.Marker({ // creates a new Google maps Marker object.
                     position: { lat: element.lat, lng: element.lng }, // sets position of marker to specified location
                     map: this.map, // sets markers to appear on the map we just created on line 35
-                    // title: location.name, // the title of the marker is set to the name of the location
+                    title: contentString, // the title of the marker is set to the name of the location
                     draggable: true
                 });
+
+                var infowindow = new google.maps.InfoWindow({
+                    content: contentString
+                  });
 
                 marker.addListener('dragend', (e) => {
                     console.log(e.latLng.lat(), e.latLng.lng());
@@ -94,6 +99,10 @@ export default class Map extends Component {
                         element
                     });
 
+                });
+
+                marker.addListener('click', function(){
+                    infowindow.open(this.map, marker);
                 });
             })
 

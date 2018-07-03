@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 import { toNumber } from 'lodash';
-// import HTML5Backend from 'react-dnd-html5-backend';
-// import { DragDropContext } from 'react-dnd';
-
-// import the Google Maps API Wrapper from google-maps-react
 import { GoogleApiWrapper } from 'google-maps-react';
 import Map from './Components/Map';
 import Locations from './Components/Locations';
-// import List from './Components/List';
+
 
 class App extends Component {
   constructor(props) {
@@ -16,12 +12,15 @@ class App extends Component {
     this.state = {
       locations: [],
       route: false,
-      clicked: false
-    }
+      }
   }
 
   onLocationsChange = (locations) => {
     this.setState({ locations: locations });
+    if(this.state.locations.length < 2){
+      this.setState({ route: false });
+      console.log(this.state.route);
+    }
   }
 
   handleClick = (marker) => {
@@ -31,37 +30,35 @@ class App extends Component {
 
   handleDragend = (markerDrag) => {
     let index = this.state.locations.indexOf(markerDrag.element);
-    this.state.locations[index] = { lat: toNumber(markerDrag.lat), lng: toNumber(markerDrag.lng) };
-    this.setState({ locations: this.state.locations });
+    let newLocations = this.state.locations;
+    newLocations[index] = { lat: toNumber(markerDrag.lat), lng: toNumber(markerDrag.lng) };
+    this.setState({ locations: newLocations });
 
   }
 
   rearrangeArray = (newArray) => {
     this.setState({ locations: newArray });
-    console.log(this.state.locations);
-  }
-
-  changeRouteState() {
-    this.setState({ route: true });
-  }
-
-  makeRoute = () => {
-    this.changeRouteState();
-    console.log(this.state.route);
-  }
-
-  handleBlur = (event) => {
-    this.setState({ clicked: true });
   }
 
 
+  onRouteChange = (val) =>{
+    this.setState({ route: val });
+      
+  }
+
+  // makeRoute = () => {
+  //   if (this.state.route == false) {
+  //     this.setState({ route: true });
+  //   }
+    
+  // }
 
   render() {
     const listLocations = this.state.locations;
-    const shouldMarkError = () => {
-      const shouldShow = this.state.clicked;
-      return this.state.locations.length < 2 ? shouldShow : false;
-    }
+    // const shouldMarkError = () => {
+    //   const shouldShow = this.state.route;
+    //   return this.state.locations.length < 2 ? shouldShow : false;
+    // }
 
 
     return (
@@ -72,15 +69,19 @@ class App extends Component {
         <div className="wrapper">
           <div className="container-fluid">
             <div className="rows">
-              <Locations locations={this.state.locations} onChange={this.onLocationsChange} onRearrange={this.rearrangeArray} />
-              <button className="make-route-css col-xs-12 col-sm-6 col-md-4 col-lg-3 right" onClick={this.makeRoute}>Make route</button>
+              <Locations locations={this.state.locations} route={this.state.route} onChange={this.onLocationsChange} onRearrange={this.rearrangeArray} onRtChange={this.onRouteChange}/>
+              {/* <button className="make-route-css right" onClick={this.makeRoute}>Make route</button>
+              <br/><span className={shouldMarkError() ? "shown_err" : "hidden"}>Недостаточно точек для построения маршрута</span> */}
               <Map google={this.props.google} locationsFromParent={listLocations} onClick={this.handleClick} onDragend={this.handleDragend} route={this.state.route} />
             </div>
-          </div>
+          
+              
          
+          </div>
+
         </div>
-        
-        <span className={shouldMarkError() ? "shown" : "hidden"}>Не достаточно точек для построения маршрута</span>
+
+
       </div>
     )
   }
