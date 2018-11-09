@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { EFAULT } from 'constants';
 import { toNumber } from 'lodash';
-import { error } from 'util';
+
 
 class MarkersInput extends Component {
   constructor(props) {
@@ -13,6 +12,7 @@ class MarkersInput extends Component {
     return {
       lat: "",
       lng: "",
+      // name: "Точка маршрута",
       errors: {},
       touched: {
         lat: false,
@@ -67,10 +67,6 @@ class MarkersInput extends Component {
     } else {
       alert("Form has errors.")
     }
-  }
-
-  makeRoute = (event) =>{
-    console.log("clicked");
   }
 
   render() {

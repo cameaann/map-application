@@ -2,8 +2,26 @@ import React, { Component } from 'react';
 import MarkersInput from './MarkersInput';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 
+const SortableItem = SortableElement(({ value, index, marker, onRemove }) => <li className="locations-css" key={index}><span>{value}</span>
+<button className="delete-css" onClick={() => onRemove(marker)}>Delete</button></li>);
 
-class Locations extends Component {
+const SortableList = SortableContainer(({ locations, onRemove }) => {
+    function financial(x) {
+        return Number.parseFloat(x).toFixed(5);
+    }
+return (
+    <ul>
+        {locations.map((value, index) => (
+            <SortableItem key={`item-${index}`} index={index} value={financial(value.lat) + ';  ' + financial(value.lng)} marker={value} onRemove={onRemove} />
+            // <SortableItem key={`item-${index}`} index={index} value={'Точка маршрута ' + index} marker={value} />
+            // this.changeIndexView(index)
+        ))}
+    </ul>
+)
+});
+
+
+export default class Locations extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -31,13 +49,13 @@ class Locations extends Component {
         this.props.onChange(this.state.locations);
     }
 
-    deleteMarker = (marker) => {
+    onRemove = (marker) => {
         const newState = this.state.locations.slice();
         console.log(newState.indexOf(marker));
         if (newState.indexOf(marker) > -1) {
             newState.splice(newState.indexOf(marker), 1);
             this.setState({ locations: newState });
-            this.props.onChange(newState);
+            this.props.onChange(newState, marker);
         }
     }
 
@@ -46,9 +64,7 @@ class Locations extends Component {
         this.props.onRtChange(true);
     }
 
-    financial(x) {
-        return Number.parseFloat(x).toFixed(5);
-    }
+    
 
     changeIndexView(x) {
         return x + 1;
@@ -57,22 +73,6 @@ class Locations extends Component {
 
 
     render() {
-
-        const SortableItem = SortableElement(({ value, index, marker }) => <li className="locations-css" key={index}><span>{value}</span>
-            <button className="delete-css" onClick={this.deleteMarker.bind(this, marker)}>Удалить</button></li>);
-
-        const SortableList = SortableContainer(({ locations }) => {
-            return (
-                <ul>
-                    {locations.map((value, index) => (
-                        <SortableItem key={`item-${index}`} index={index} value={this.financial(value.lat) + ';  ' + this.financial(value.lng)} marker={value} />
-                        // <SortableItem key={`item-${index}`} index={index} value={'Точка маршрута ' + index} marker={value} />
-                        // this.changeIndexView(index)
-                    ))}
-                </ul>
-            )
-        });
-
         const shouldMarkError = () => {
             const shouldShow = this.props.route;
             console.log(shouldShow);
@@ -82,10 +82,10 @@ class Locations extends Component {
         return (
             <div className="col-xs-12 col-sm-6 col-md-4 col-lg-3 left">
                 <MarkersInput onSubmit={this.handleSubmitMarker} />
-                <SortableList locations={this.state.locations} onSortEnd={this.onSortEnd} />
+                <SortableList locations={this.state.locations} onSortEnd={this.onSortEnd} onRemove={this.onRemove} />
 
                 {/* <SortableList items= {this.state.locations} /> */}
-                <button className="make-route-css" onClick={this.makeRoute}>Построить маршрут</button>
+                <button className="make-route-css" onClick={this.makeRoute}>Make route</button>
                 <span className={shouldMarkError() ? "shown_err" : "hidden"}>Недостаточно точек для построения маршрута</span>
             </div>
 
@@ -95,4 +95,3 @@ class Locations extends Component {
 
 }
 
-export default Locations;
